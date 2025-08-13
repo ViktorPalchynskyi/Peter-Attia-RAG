@@ -1,0 +1,40 @@
+FROM node:23.11.0-alpine AS development
+
+# Установка зависимостей для работы с PDF и другими форматами
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    cairo-dev \
+    jpeg-dev \
+    pango-dev \
+    musl-dev \
+    giflib-dev \
+    pixman-dev \
+    pangomm-dev \
+    libjpeg-turbo-dev \
+    freetype-dev
+
+# Создание рабочей директории
+WORKDIR /app
+
+# Копирование package.json и package-lock.json
+COPY package*.json ./
+
+# Установка ВСЕХ зависимостей (включая dev)
+RUN npm ci
+
+# Копирование исходного кода
+COPY . .
+
+# Создание директорий с правами для node пользователя
+RUN mkdir -p /app/dist && chown -R node:node /app
+
+# Использование встроенного node пользователя
+USER node
+
+# Экспорт портов
+EXPOSE 3000 9229
+
+# Команда по умолчанию
+CMD ["npm", "run", "start:dev"]

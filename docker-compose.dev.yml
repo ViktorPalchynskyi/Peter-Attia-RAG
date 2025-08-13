@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: development
+      args:
+        HOST_UID: ${HOST_UID:-1000}
+        HOST_GID: ${HOST_GID:-1000}
+    container_name: rag-telegram-bot-dev
+    ports:
+      - "3000:3000"
+      - "9229:9229"  # Debug port
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - /app/node_modules  # Исключаем node_modules из bind mount
+      - /app/dist         # Исключаем dist из bind mount для записи
+      - ./uploads:/app/uploads
+    command: npm run start:dev
+    restart: unless-stopped
+    networks:
+      - rag-network
+
+  # PostgreSQL (закомментировано до настройки Prisma)
+  # postgres:
+  #   image: pgvector/pgvector:pg15
+  #   container_name: rag-postgres-dev
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - "${DATABASE_PORT:-5432}:5432"
+  #   volumes:
+  #     - postgres_dev_data:/var/lib/postgresql/data
+  #     - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+  #   restart: unless-stopped
+  #   networks:
+  #     - rag-network
+
+# volumes:
+#   postgres_dev_data:
+
+networks:
+  rag-network:
+    driver: bridge

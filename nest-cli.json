@@ -3,6 +3,20 @@
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
   "compilerOptions": {
-    "deleteOutDir": true
+    "deleteOutDir": false,
+    "watchAssets": true,
+    "assets": ["**/*.prisma"],
+    "plugins": ["@nestjs/swagger"]
+  },
+  "projects": {
+    "rag-telegram-bot": {
+      "type": "application",
+      "root": "",
+      "entryFile": "main",
+      "sourceRoot": "src",
+      "compilerOptions": {
+        "tsConfigPath": "tsconfig.build.json"
+      }
+    }
   }
 }
