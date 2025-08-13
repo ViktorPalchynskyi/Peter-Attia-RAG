@@ -1,11 +1,15 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { PrismaService } from '../../prisma/prisma.service';
+import { DropboxService } from '../dropbox/dropbox.service';
 
 @ApiTags('Health Check')
 @Controller('health')
 export class HealthController {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private dropboxService: DropboxService,
+  ) {}
 
   @Get()
   @ApiOperation({ summary: 'Check service health status' })
@@ -42,6 +46,9 @@ export class HealthController {
         database: process.env.DATABASE_URL ? 'configured' : 'not configured',
         openai: process.env.OPENAI_API_KEY ? 'configured' : 'not configured',
         telegram: process.env.TELEGRAM_BOT_TOKEN
+          ? 'configured'
+          : 'not configured',
+        dropbox: this.dropboxService.isConfigured()
           ? 'configured'
           : 'not configured',
       },
