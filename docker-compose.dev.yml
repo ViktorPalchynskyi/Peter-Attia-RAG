@@ -24,7 +24,6 @@ services:
     networks:
       - rag-network
 
-  # PostgreSQL (закомментировано до настройки Prisma)
   postgres:
     image: pgvector/pgvector:pg15
     container_name: rag-postgres-dev

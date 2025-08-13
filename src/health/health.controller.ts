@@ -62,6 +62,14 @@ export class HealthController {
         WHERE extname = 'vector'
       `;
 
+      // Check if tables exist
+      const tablesCheck = await this.prisma.$queryRaw`
+        SELECT table_name 
+        FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name IN ('documents', 'document_chunks', 'search_logs')
+      `;
+
       return {
         status: 'connected',
         timestamp: new Date().toISOString(),
@@ -69,10 +77,40 @@ export class HealthController {
           Array.isArray(vectorCheck) && vectorCheck.length > 0
             ? `enabled (${(vectorCheck[0] as any).extversion})`
             : 'not enabled',
+        tables: Array.isArray(tablesCheck)
+          ? tablesCheck.map((t: any) => t.table_name)
+          : [],
       };
     } catch (error) {
       return {
         status: 'error',
+        timestamp: new Date().toISOString(),
+        error: error.message,
+      };
+    }
+  }
+
+  @Get('vector-test')
+  @ApiOperation({ summary: 'Test vector database functionality' })
+  @ApiResponse({ status: 200, description: 'Vector operations working' })
+  async testVectorDatabase() {
+    try {
+      // Test vector similarity calculation
+      const testResult = await this.prisma.$queryRaw`
+        SELECT 
+          '[1,2,3]'::vector <=> '[1,2,4]'::vector as cosine_distance,
+          '[1,2,3]'::vector <-> '[1,2,4]'::vector as euclidean_distance,
+          '[1,2,3]'::vector <#> '[1,2,4]'::vector as inner_product
+      `;
+
+      return {
+        status: 'vector_operations_working',
+        timestamp: new Date().toISOString(),
+        test_result: testResult,
+      };
+    } catch (error) {
+      return {
+        status: 'vector_error',
         timestamp: new Date().toISOString(),
         error: error.message,
       };
