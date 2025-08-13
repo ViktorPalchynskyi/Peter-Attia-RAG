@@ -1,9 +1,12 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { PrismaService } from '../../prisma/prisma.service';
 
 @ApiTags('Health Check')
 @Controller('health')
 export class HealthController {
+  constructor(private prisma: PrismaService) {}
+
   @Get()
   @ApiOperation({ summary: 'Check service health status' })
   @ApiResponse({
@@ -43,6 +46,37 @@ export class HealthController {
           : 'not configured',
       },
     };
+  }
+
+  @Get('database')
+  @ApiOperation({ summary: 'Check database connectivity' })
+  @ApiResponse({ status: 200, description: 'Database is accessible' })
+  async checkDatabase() {
+    try {
+      await this.prisma.$queryRaw`SELECT 1`;
+
+      // Check pgvector
+      const vectorCheck = await this.prisma.$queryRaw`
+        SELECT extname, extversion 
+        FROM pg_extension 
+        WHERE extname = 'vector'
+      `;
+
+      return {
+        status: 'connected',
+        timestamp: new Date().toISOString(),
+        pgvector:
+          Array.isArray(vectorCheck) && vectorCheck.length > 0
+            ? `enabled (${(vectorCheck[0] as any).extversion})`
+            : 'not enabled',
+      };
+    } catch (error) {
+      return {
+        status: 'error',
+        timestamp: new Date().toISOString(),
+        error: error.message,
+      };
+    }
   }
 
   @Get('ping')

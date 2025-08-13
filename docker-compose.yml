@@ -10,11 +10,6 @@ services:
       - "3000:3000"
     env_file:
       - .env
-    # Закомментировано до настройки БД
-    # environment:
-    #   - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
-    # depends_on:
-    #   - postgres
     volumes:
       - ./uploads:/app/uploads
     restart: unless-stopped
@@ -22,22 +17,22 @@ services:
       - rag-network
 
   # PostgreSQL (закомментировано до настройки Prisma)
-  # postgres:
-  #   image: pgvector/pgvector:pg15
-  #   container_name: rag-postgres
-  #   env_file:
-  #     - .env
-  #   ports:
-  #     - "${DATABASE_PORT:-5432}:5432"
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
-  #     - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-  #   restart: unless-stopped
-  #   networks:
-  #     - rag-network
+  postgres:
+    image: pgvector/pgvector:pg15
+    container_name: rag-postgres
+    env_file:
+      - .env
+    ports:
+      - "${DATABASE_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+    networks:
+      - rag-network
 
-# volumes:
-#   postgres_data:
+volumes:
+  postgres_data:
 
 networks:
   rag-network:

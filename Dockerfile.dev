@@ -36,5 +36,5 @@ USER node
 # Экспорт портов
 EXPOSE 3000 9229
 
-# Команда по умолчанию
-CMD ["npm", "run", "start:dev"]
+# Команда по умолчанию (только одна генерация Prisma)
+CMD ["sh", "-c", "npx prisma generate && npm run start:dev"]
