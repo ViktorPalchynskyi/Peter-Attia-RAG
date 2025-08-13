@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { HealthModule } from './health/health.module';
+import { TelegramModule } from './telegram/telegram.module';
 
 @Module({
   imports: [
@@ -9,6 +10,7 @@ import { HealthModule } from './health/health.module';
       envFilePath: '.env',
     }),
     HealthModule,
+    TelegramModule,
   ],
 })
 export class AppModule {}

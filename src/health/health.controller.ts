@@ -5,10 +5,10 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 @Controller('health')
 export class HealthController {
   @Get()
-  @ApiOperation({ summary: 'Service helath checkout' })
+  @ApiOperation({ summary: 'Check service health status' })
   @ApiResponse({
     status: 200,
-    description: 'Service is working correctly',
+    description: 'Service is running correctly',
     schema: {
       type: 'object',
       properties: {
@@ -46,7 +46,7 @@ export class HealthController {
   }
 
   @Get('ping')
-  @ApiOperation({ summary: 'Check' })
+  @ApiOperation({ summary: 'Simple availability check' })
   @ApiResponse({ status: 200, description: 'Pong' })
   ping() {
     return { message: 'pong', timestamp: new Date().toISOString() };
