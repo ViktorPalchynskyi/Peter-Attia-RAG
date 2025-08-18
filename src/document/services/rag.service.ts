@@ -138,10 +138,14 @@ export class RagService {
 
 CRITICAL INSTRUCTIONS:
 - Use ONLY the information provided in the context chunks
+- Include direct quotes from Peter Attia when they support your answer (use quotation marks)
+- DO NOT include [Source X] references in your response text - sources will be listed separately
+- When possible, include specific numbers, measurements, or recommendations mentioned
 - If the context doesn't contain enough information to answer the question, say so clearly
-- Always cite specific sources when making claims
 - Be precise and avoid speculation
-- Maintain scientific accuracy and nuance`;
+- Maintain scientific accuracy and nuance
+- Prioritize Peter Attia's direct statements and recommendations
+- Focus on providing actionable insights and specific guidance`;
 
     // Add response mode specific instructions
     switch (mode) {
@@ -192,8 +196,12 @@ CRITICAL INSTRUCTIONS:
 
     prompt += `Based on the above context, please provide a comprehensive answer to the question. Remember to:
 - Use only the information provided in the context
-- Cite sources when making specific claims
-- Be clear if the context doesn't provide sufficient information for certain aspects of the question`;
+- Include direct quotes from Peter Attia when relevant (use quotation marks)
+- DO NOT use [Source X] citations in your response - just provide the information naturally
+- If you include quotes, make them prominent and clearly attributed to Peter Attia
+- Include specific numbers, dosages, or measurements when mentioned
+- Be clear if the context doesn't provide sufficient information for certain aspects of the question
+- Focus on Peter Attia's specific recommendations and actionable insights`;
 
     return prompt;
   }
