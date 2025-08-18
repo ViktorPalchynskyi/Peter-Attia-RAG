@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,37 +8,30 @@ datasource db {
 }
 
 model Document {
-  id          String   @id @default(cuid())
-  filename    String   @db.VarChar(500)
-  fileType    String   @map("file_type") @db.VarChar(50)
-  content     String   @db.Text
-  metadata    Json?    @db.JsonB
-  dropboxPath String?  @map("dropbox_path") @db.VarChar(500)
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  // Relationship with chunks
-  chunks DocumentChunk[]
+  id          String          @id @default(cuid())
+  filename    String          @db.VarChar(500)
+  fileType    String          @map("file_type") @db.VarChar(50)
+  content     String
+  metadata    Json?
+  dropboxPath String?         @map("dropbox_path") @db.VarChar(500)
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+  chunks      DocumentChunk[]
 
   @@map("documents")
 }
 
 model DocumentChunk {
-  id            String   @id @default(cuid())
-  documentId    String   @map("document_id")
-  content       String   @db.Text
-  chunkIndex    Int      @map("chunk_index")
-  startPosition Int      @default(0) @map("start_position")
-  endPosition   Int      @default(0) @map("end_position")
-  
-  // Vector embedding - using Unsupported for pgvector
-  embedding     Unsupported("vector(1536)")?
-  
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-
-  // Relationship with document
-  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  id            String                 @id @default(cuid())
+  documentId    String                 @map("document_id")
+  content       String
+  chunkIndex    Int                    @map("chunk_index")
+  startPosition Int                    @default(0) @map("start_position")
+  endPosition   Int                    @default(0) @map("end_position")
+  embedding     Unsupported("vector")?
+  createdAt     DateTime               @default(now()) @map("created_at")
+  updatedAt     DateTime               @updatedAt @map("updated_at")
+  document      Document               @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
   @@index([documentId])
   @@map("document_chunks")
@@ -50,8 +40,8 @@ model DocumentChunk {
 model SearchLog {
   id           String   @id @default(cuid())
   userId       String?  @map("user_id") @db.VarChar(100)
-  query        String   @db.Text
-  results      Json?    @db.JsonB
+  query        String
+  results      Json?
   responseTime Float    @default(0) @map("response_time")
   createdAt    DateTime @default(now()) @map("created_at")
 

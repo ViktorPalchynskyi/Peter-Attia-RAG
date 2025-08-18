@@ -62,24 +62,46 @@ export class PrismaService
     queryEmbedding: number[],
     limit: number = 10,
     threshold: number = 0.5,
-  ) {
+  ): Promise<Array<{
+    id: string;
+    content: string;
+    document_id: string;
+    filename: string;
+    file_type: string;
+    distance: number;
+    similarity: number;
+    chunk_index: number;
+  }>> {
     const vectorString = `[${queryEmbedding.join(',')}]`;
 
-    return this.$queryRaw`
+    const results = await this.$queryRaw`
       SELECT 
         dc.id,
         dc.content,
         dc.document_id,
+        dc.chunk_index,
         d.filename,
         d.file_type,
-        (dc.embedding <=> ${vectorString}::vector) as distance
+        (dc.embedding <=> ${vectorString}::vector) as distance,
+        (1 - (dc.embedding <=> ${vectorString}::vector)) as similarity
       FROM document_chunks dc
       JOIN documents d ON dc.document_id = d.id
       WHERE dc.embedding IS NOT NULL
-        AND (dc.embedding <=> ${vectorString}::vector) < ${threshold}
+        AND (dc.embedding <=> ${vectorString}::vector) <= ${1 - threshold}
       ORDER BY dc.embedding <=> ${vectorString}::vector
       LIMIT ${limit}
-    `;
+    ` as Array<{
+      id: string;
+      content: string;
+      document_id: string;
+      chunk_index: number;
+      filename: string;
+      file_type: string;
+      distance: number;
+      similarity: number;
+    }>;
+
+    return results;
   }
 
   // Helper method to insert embeddings

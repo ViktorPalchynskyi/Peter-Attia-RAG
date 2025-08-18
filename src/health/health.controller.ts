@@ -51,6 +51,7 @@ export class HealthController {
         dropbox: this.dropboxService.isConfigured()
           ? 'configured'
           : 'not configured',
+        documentParsers: 'active',
       },
     };
   }
