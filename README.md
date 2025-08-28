@@ -1,98 +1,263 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🤖 RAG Telegram Bot - Peter Attia Knowledge Base
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+AI-powered Telegram bot for health and longevity questions based on Peter Attia's research and content. Uses Retrieval-Augmented Generation (RAG) to provide accurate, context-aware answers from a comprehensive knowledge base.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🛠️ Technologies Stack
 
-## Description
+### **Backend Framework**
+- **NestJS** `^11.0.1` - Progressive Node.js framework
+- **TypeScript** `^5.7.3` - Type-safe JavaScript superset
+- **Node.js** - JavaScript runtime environment
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+### **Database & Vector Search**
+- **PostgreSQL** with **pgvector** extension - Vector database for semantic search
+- **Prisma ORM** `^6.14.0` - Database access and management
 
-## Project setup
+### **AI & Machine Learning**
+- **OpenAI API** `^5.12.2` - GPT models and text embeddings
+  - `text-embedding-3-small` - Text embeddings generation
+  - `gpt-4` / `gpt-3.5-turbo` - Response generation
 
+### **Telegram Integration**
+- **node-telegram-bot-api** `^0.66.0` - Telegram Bot API wrapper
+- **Webhook architecture** - Real-time message processing
+
+### **Document Processing**
+- **pdf-parse** `^1.1.1` - PDF document parsing
+- **mammoth** `^1.10.0` - DOCX/DOC document processing
+- **xlsx** `^0.18.5` - Excel spreadsheet parsing
+- **node-stream-zip** `^1.15.0` - ZIP archive extraction
+
+### **External Integrations**
+- **Dropbox API** `^10.34.0` - Knowledge base file storage and retrieval
+
+### **Development & Deployment**
+- **Docker & Docker Compose** - Containerization
+- **Swagger/OpenAPI** `^11.2.0` - API documentation
+- **ESLint** `^9.18.0` - Code linting
+- **Prettier** `^3.4.2` - Code formatting
+- **Jest** `^29.7.0` - Testing framework
+
+### **Validation & Transformation**
+- **class-validator** `^0.14.2` - Input validation
+- **class-transformer** `^0.5.1` - Object transformation
+
+## 🏗️ Project Architecture
+
+### **Core Components**
+1. **Document Processing Pipeline** - Ingests and processes documents from Dropbox
+2. **Vector Search Engine** - Semantic similarity search using embeddings
+3. **RAG Pipeline** - Combines search results with LLM generation
+4. **Telegram Bot Interface** - User interaction layer
+5. **REST API** - Administrative and debugging endpoints
+
+### **Data Flow**
+1. Documents stored in Dropbox → Downloaded and parsed
+2. Text chunked into fragments → Converted to embeddings
+3. Embeddings stored in PostgreSQL with pgvector
+4. User questions → Embedded and searched against knowledge base
+5. Relevant context + question → Sent to LLM for answer generation
+
+## 🚀 Quick Start
+
+### **Prerequisites**
+- Docker & Docker Compose
+- OpenAI API key
+- Dropbox API credentials
+- Telegram Bot Token
+
+### **Setup**
 ```bash
-$ npm install
+# Clone repository
+git clone <repository-url>
+cd rag-telegram-bot
+
+# Configure environment
+cp .env.example .env
+# Edit .env with your API keys
+
+# Start services
+docker-compose up -d
+
+# Initialize database
+docker exec rag-telegram-bot-dev npx prisma db push
+
+# Process documents
+curl -X POST "http://localhost:3000/documents/process-all"
+
+# Generate embeddings
+curl -X POST "http://localhost:3000/documents/embeddings/generate-all"
+
+# Setup Telegram webhook (see Webhook Setup section below)
 ```
 
-## Compile and run the project
+## 🔗 Webhook Setup
 
+### **Step 1: Expose your local server (Development)**
+
+**Using ngrok (Recommended):**
 ```bash
-# development
-$ npm run start
+# Install ngrok
+npm install -g ngrok
 
-# watch mode
-$ npm run start:dev
+# Expose local port 3000
+ngrok http 3000
 
-# production mode
-$ npm run start:prod
+# Copy the HTTPS URL (e.g., https://abc123.ngrok.io)
 ```
 
-## Run tests
-
+**Alternative: Using localtunnel:**
 ```bash
-# unit tests
-$ npm run test
+# Install localtunnel
+npm install -g localtunnel
 
-# e2e tests
-$ npm run test:e2e
+# Expose local port 3000
+lt --port 3000
 
-# test coverage
-$ npm run test:cov
+# Copy the HTTPS URL
 ```
 
-## Deployment
+### **Step 2: Set webhook URL in Telegram**
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
+**Method 1: Using curl (Recommended):**
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# Replace YOUR_BOT_TOKEN and YOUR_NGROK_URL
+curl -X POST "https://api.telegram.org/bot<YOUR_BOT_TOKEN>/setWebhook" \
+     -H "Content-Type: application/json" \
+     -d '{"url": "https://<YOUR_NGROK_URL>/telegram/webhook"}'
+
+# Example:
+curl -X POST "https://api.telegram.org/bot1234567890:ABC.../setWebhook" \
+     -H "Content-Type: application/json" \
+     -d '{"url": "https://abc123.ngrok.io/telegram/webhook"}'
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+**Method 2: Using browser:**
+```
+https://api.telegram.org/bot<YOUR_BOT_TOKEN>/setWebhook?url=https://<YOUR_NGROK_URL>/telegram/webhook
+```
 
-## Resources
+### **Step 3: Verify webhook setup**
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+# Check webhook status
+curl "https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getWebhookInfo"
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# Test bot health
+curl "http://localhost:3000/health"
 
-## Support
+# Test Telegram endpoint
+curl "http://localhost:3000/telegram/info"
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### **Step 4: Test the bot**
 
-## Stay in touch
+1. Open your bot in Telegram (@your_bot_name)
+2. Send `/start` command
+3. Ask a health-related question
+4. Check logs: `docker logs rag-telegram-bot-dev --tail 20`
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### **Webhook Troubleshooting**
 
-## License
+**Common issues:**
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+1. **HTTPS required**: Telegram webhooks require HTTPS URLs
+   ```bash
+   # ❌ Wrong: http://localhost:3000/telegram/webhook
+   # ✅ Correct: https://abc123.ngrok.io/telegram/webhook
+   ```
+
+2. **Port not accessible**: Ensure your app is running on correct port
+   ```bash
+   curl "http://localhost:3000/health"  # Should return 200 OK
+   ```
+
+3. **Webhook not set**: Verify webhook URL is registered
+   ```bash
+   curl "https://api.telegram.org/bot<TOKEN>/getWebhookInfo"
+   ```
+
+4. **Bot token invalid**: Check your TELEGRAM_BOT_TOKEN in .env
+   ```bash
+   curl "https://api.telegram.org/bot<TOKEN>/getMe"  # Should return bot info
+   ```
+
+### **Production Deployment**
+
+For production, replace ngrok URL with your actual domain:
+
+```bash
+# Production webhook setup
+curl -X POST "https://api.telegram.org/bot<YOUR_BOT_TOKEN>/setWebhook" \
+     -H "Content-Type: application/json" \
+     -d '{"url": "https://yourdomain.com/telegram/webhook"}'
+```
+
+### **API Endpoints**
+- `GET /health` - Health check
+- `POST /documents/process-all` - Process all Dropbox documents
+- `POST /documents/embeddings/generate-all` - Generate embeddings
+- `POST /documents/search` - Semantic search
+- `POST /documents/rag` - RAG query
+- `GET /dropbox/status` - Dropbox connection status
+
+## 🔧 Configuration
+
+### **Environment Variables**
+```env
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/rag_db"
+
+# OpenAI
+OPENAI_API_KEY="sk-..."
+
+# Dropbox
+DROPBOX_ACCESS_TOKEN="sl...."
+
+# Telegram
+TELEGRAM_BOT_TOKEN="1234567890:ABC..."
+TELEGRAM_WEBHOOK_URL="https://your-domain.com/telegram/webhook"
+
+# Application
+PORT=3000
+NODE_ENV=development
+```
+
+## 📊 Features
+
+### **Multi-language Support**
+- 🇷🇺 Russian (Russia, Ukraine, Belarus, Kazakhstan)
+- 🇺🇸 English (all other regions)
+- Auto-detection based on Telegram user locale
+
+### **Response Modes**
+- **Quick** (`/quick`) - Brief, concise answers
+- **Detailed** (`/detailed`) - Comprehensive explanations
+- **Auto** - Intelligent mode selection
+
+### **Document Types Supported**
+- PDF documents
+- Word documents (DOCX, DOC)
+- Excel spreadsheets (XLSX, XLS)
+- Text files (TXT)
+- ZIP archives
+
+### **Advanced Features**
+- Semantic search with similarity scoring
+- Context-aware quote extraction
+- Source attribution and referencing
+- Usage analytics and statistics
+- Confidence scoring for answers
+
+## 📈 Performance Metrics
+
+### **Current Knowledge Base**
+- **134 documents** successfully processed
+- **46,678 text chunks** with embeddings
+- **~2.5M words** of content
+- **Processing time**: ~72 minutes for full embedding generation
+
+### **Response Performance**
+- **Average response time**: 4-8 seconds
+- **Search accuracy**: High relevance with similarity threshold 0.7
+- **Confidence scores**: Typically 75-85% for well-covered topics

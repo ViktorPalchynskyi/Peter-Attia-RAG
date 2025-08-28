@@ -8,7 +8,7 @@ import {
   ContextChunk, 
   ResponseMode, 
   ResponseLanguage,
-  RagAnalyticsDto 
+  RagAnalyticsDto
 } from '../dto/rag.dto';
 import OpenAI from 'openai';
 
